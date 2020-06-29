@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取图片的主色调</title>
+    <link rel="stylesheet" href="./swiper.min.css">
+
+    <!-- 插件地址： https://github.com/briangonzalez/rgbaster.js -->
+
+    <style>
+        html,
+        body {
+            position: relative;
+            height: 100%;
+        }
+
+        body {
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            box-shadow: inset 0 60px rgba(255, 255, 255, .2), inset 0 0 60px rgba(255, 255, 255, .1), inset 50px -60px 0 rgba(255, 255, 255, .1), inset -60px 120px rgba(255, 255, 255, .06);
+            transition: background-color .25s;
+        }
+
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+
+            /* Center slide text vertically */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+
+        img {
+            box-shadow: 0 0 10px rgba(0, 0, 0, .35);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <img src="http://images.wangenbo.com/mm2.jpg" alt="" id="img1">
+            </div>
+            <div class="swiper-slide">
+                <img src="http://images.wangenbo.com/mm3.jpg" alt="" id="img2">
+            </div>
+            <div class="swiper-slide">
+                <img src="http://images.wangenbo.com/mm4.jpg" alt="" id="img3">
+            </div>
+        </div>
+        <!-- Add Pagination -->
+        <!-- <div class="swiper-pagination"></div> -->
+        <!-- Add Arrows -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+    <script src="./swiper.min.js"></script>
+    <script src="./rgbaster.min.js"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+        var swiper = new Swiper('.swiper-container', {
+            pagination: {
+                el: '.swiper-pagination',
+                type: 'fraction',
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            on: {
+                slideChangeTransitionStart: function () {
+                    let target = document.getElementById('img' + (this.activeIndex + 1));
+
+                    RGBaster.colors(target, {
+                        exclude: ['rgb(255,255,255)', 'rgb(0,0,0)'],
+                        success: function (payload) {
+                            body.style.background = payload.dominant;
+                        }
+                    });
+                },
+            }
+        });
+
+        var body = document.getElementsByTagName('body')[0];
+        var img1 = document.getElementById('img1');
+
+        // body.style.background = 'red'
+
+        RGBaster.colors(img1, {
+            exclude: ['rgb(255,255,255)', 'rgb(0,0,0)'],
+            success: function (payload) {
+                body.style.background = payload.dominant;
+            }
+        });
+    </script>
+</body>
+
+</html>
