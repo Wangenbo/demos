@@ -1,6 +1,7 @@
 var id = "100012043978";
 var time = new Date();
 
+
 app.launchApp("京东");
 // 延迟2s 等待资源加载完毕
 sleep(2000);
