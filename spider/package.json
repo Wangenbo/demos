@@ -1,0 +1,21 @@
+{
+  "name": "spider",
+  "version": "1.0.0",
+  "description": "",
+  "main": "wallpaper-spider.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "async": "^3.2.0",
+    "cheerio": "^1.0.0-rc.5",
+    "imageinfo": "^1.0.4",
+    "mysql": "^2.18.1",
+    "node-xlsx": "^0.15.0",
+    "request": "^2.88.2",
+    "superagent": "^6.1.0"
+  },
+  "dependencies": {}
+}
