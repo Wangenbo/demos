@@ -1,8 +1,6 @@
 const request = require("request");
 const fs = require("fs");
-const http = require("http");
 const mysql = require('mysql');
-const async = require('async');
 
 const connection = mysql.createConnection({
     host     : 'localhost',
@@ -10,27 +8,16 @@ const connection = mysql.createConnection({
     password : '123456',
     database : 'wallpaper'
 });
+const dir = './image/'
+
+var start = 1;
 
 connection.connect();
 
-connection.query(`SELECT * FROM url limit 10000`, function (error, results, fields) {
-    if (error) throw error;
 
-    for(let i = 0; i < results.length; i++) {
-        let url = setUrl(results[i].url);
-        let path = "./image/" + getImageName(results[i].url);
+downImage(start).then(()=> {});
 
-        // request.get(url).on('error', function (err) {
-        //     console.log(err);
-        // }).pipe(fs.createWriteStream("./image/" + getImageName(results[i].url)))
-        //     .on('close', function() {
-        //     console.log('done', i+1);
-        // })
 
-        download(url, path, i);
-    }
-
-});
 function setUrl(url) {
     const URL = 'http://m.bcoderss.com';
     let tempUrl = encodeURI(url);
@@ -57,22 +44,45 @@ function sleep(time = 0) {
     })
 };
 
-function download(url, filename, index) {
-    http.get(url, function(res){
-        var imgData = "";
 
-        res.setEncoding("binary"); //一定要设置response的编码为binary否则会下载下来的图片打不开
-        res.on("data", function(chunk){ //这步是我百度来的。。。。
-            imgData+=chunk;
-        });
+function downImage(start_id) {
+    let sql = 'SELECT * FROM url WHERE id = ' + (start_id);
 
-        res.on("end", function(){
-            fs.writeFileSync(filename, imgData, "binary", function(err){
-                if(err){
-                    console.log("down fail", index);
+    console.log('开始下载第：' + start_id + '张');
+    return new Promise((resolve, reject) => {
+        connection.query(sql, function (error, results, fields) {
+            if (error){
+                reject(error);
+                throw error;
+            }
+
+            let url = setUrl(results[0].url);
+
+            let fullPath = dir + getImageName(results[0].url);
+
+            // 如果文件不存在
+            fs.exists(fullPath, (exists)=> {
+                if(!exists) {
+                    request.get(url).on('error', function (err) {
+                        console.log(err);
+                    }).pipe(fs.createWriteStream(dir + getImageName(results[0].url)))
+                        .on('close', function() {
+                            start++;
+                            console.log('已经完成：', start_id);
+
+                            if(start <= 10000) {
+                                downImage(start);
+                            }
+                            resolve();
+                        })
+                }else{
+                    start++;
+                    downImage(start);
+                    console.log('文件已经存在');
                 }
-                console.log("down success", index);
-            });
+
+
+            })
         });
-    });
+    })
 }
